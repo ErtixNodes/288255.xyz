@@ -4,6 +4,7 @@ const port = process.env.PORT || 3000;
 
 const express = require('express');
 const session = require('express-session');
+const LokiStore = require('connect-loki')(session);
 const app = express();
 
 const db = require('./db.js');
@@ -16,8 +17,15 @@ app.use(session({
     cookie: {
         maxAge: 60 * 60 * 1000 * 24 * 30 // 30 days
     },
-    saveUninitialized: false,
-    resave: false
+    saveUninitialized: true,
+    resave: false,
+
+    store: new LokiStore({
+        path: "./sessions.db",
+        logErrors: true
+    }),
+
+    name: 'freehost'
 }));
 
 app.use(express.json());
